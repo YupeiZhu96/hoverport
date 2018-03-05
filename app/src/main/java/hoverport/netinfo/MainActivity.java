@@ -44,11 +44,12 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     private BufferedReader in;
     private ExecutorService mExecutorService = null;
     private String receiveMsg;
+    private static String ips="";
     Handler textViewHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             if (msg.what == 1 && textView!=null) {
-                textView.setText(t);
+                //textView.setText(t);
             }
             super.handleMessage(msg);
         }
@@ -152,25 +153,12 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         thread.start();
         Log.wtf("ip",getUSBTetheredIP());
         textView.setText(getUSBTetheredIP());
-        Thread thread1 = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Socket socket = new Socket(getUSBTetheredIP(),5099);
-                    printWriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
-                            socket.getOutputStream(), "UTF-8")), true);
-                    printWriter.println("hahahahahhahahahahah");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        //thread1.start();
     }
     public static String getUSBTetheredIP() {
 
         BufferedReader bufferedReader = null;
-        String ips="";
+
+        String test ="";
 
         try {
             bufferedReader = new BufferedReader(new FileReader("/proc/net/arp"));
@@ -181,11 +169,13 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 String[] splitted = line.split(" +");
                 if (splitted != null && splitted.length >= 4) {
                     String ip = splitted[0];
+                    test = test+ip;
+                    test = test+"\n";
                     String mac = splitted[3];
                     if (mac.matches("..:..:..:..:..:..")) {
                         if (mac.matches("00:00:00:00:00:00")) {
                             //Log.d("DEBUG", "Wrong:" + mac + ":" + ip);
-                        } else {
+                        } else if(ip.matches("192.168.42...")) {
                             //Log.d("DEBUG", "Correct:" + mac + ":" + ip);
                             ips = ip;
                             break;
@@ -205,6 +195,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 e.printStackTrace();
             }
         }
-        return ips;
+        return ips.equals("")?test:ips;
     }
 }
