@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     private TextView textView = null;
     private PrintWriter printWriter;
     private static String ips="";
+    private static String test="";
     Handler textViewHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -51,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 textView.setText(t);
             }
             else if(msg.what == 0 && textView!=null){
-                textView.setText("Please enable USB tethering");
+                textView.setText("Please enable USB tethering\n"+test);
             }
             super.handleMessage(msg);
         }
@@ -182,17 +183,18 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
         try {
             bufferedReader = new BufferedReader(new FileReader("/proc/net/arp"));
-            //t = "";
+            test = "";
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 String[] splitted = line.split(" +");
+
                 if ( splitted.length >= 4) {
                     String ip = splitted[0];
-                    //t+=ip;
+                    test+=ip;
                     //t+="\n";
                     String mac = splitted[3];
                     if (mac.matches("..:..:..:..:..:..")) {
-                            if(ip.matches("192.168.42...")) {
+                            if(ip.matches("192.168.42..")||ip.matches("192.168.42...")||ip.matches("192.168.42....")) {
                             //Log.d("DEBUG", "Correct:" + mac + ":" + ip);
                             ips = ip;
                             return true;
